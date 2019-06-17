@@ -1,0 +1,25 @@
+During the last few decades, an increasing amount of user data have been sent
+to environments not controlled by data owners. In some cases these data are sent with
+the objective to turn them public, but in the vast majority of times, these data
+need to be kept safe and private, or to be allowed access only in very specific
+use cases. Considering the case where data need to be kept private, entities
+must take specific measures to maintain the data security and privacy while
+transmitting, storing and processing them. With this objective many efforts
+have been made, including the specification of hardware components that provide
+a trusted execution environment (TEEs), like the Intel Software Guard Extensions
+(SGX). The use of this technology , though, can be made in incorrect or
+ineffective ways, due to not taking some considerations into account during the
+development of applications.
+
+In this work, we approach the main challenges faced in the development of
+applications that use SGX, and propose good practices and a toolset (DynSGX)
+that help making better use of the capabilities of this technology. Such
+challenges include, but are not limited to, application partitioning,
+application colocation in cloud computing environments, and memory management.
+
+The studies presented in this work show that the bad use of this technology can
+result in a considerable performance loss when compared to
+implementations that take into account the good practices proposed. The toolset
+proposed in this work also showed to enable protecting application code in cloud
+computing environments, having a negligible performance overhead when
+compared to the regular SGX programming model.

@@ -1,0 +1,320 @@
+\chapter{Estado da arte e trabalhos relacionados}
+\label{chapter:estadoarte}
+
+Neste capítulo, mostramos e discutimos as diferentes soluções existentes
+para garantia de segurança e privacidade de dados. Primeiramente exploramos os
+conceitos de \textbf{TCB} e \textbf{primitivas criptográficas} e a importância
+de ambos no desenvolvimento de soluções de segurança e privacidade em sistemas
+computacionais. Após, são discutidas as soluções de \textbf{segurança baseadas
+em \textit{software}}, e em seguida, as soluções de \textbf{segurança baseadas
+em \textit{hardware}}. Mais à frente, são apresentados os trabalhos relacionados
+mais relevantes à esta pesquisa. Por fim, é apresentado um breve sumário de como
+este trabalho aborda o uso de uma das tecnologias atuais, com o objetivo de
+tirar melhor proveito da mesma.
+
+\section{Base de computação confiável}
+\label{sec:estadoarte_tcb}
+
+A base de computação confiável (TCB, do inglês \textit{Trusted Computing Base})
+é um dos principais conceitos utilizados no desenvolvimento de aplicações
+seguras. Ela foi primeiramente definida como sendo a combinação de \textit
+{kernel} e processos confiáveis, \textit{i.e.}, que podem violar as regras de
+controle de acesso de um sistema~\cite{rushby1981design}. Mais à frente, TCB foi
+descrito como sendo uma pequena porção de \textit{software} e \textit{hardware}
+na qual a segurança de um sistema computacional depende, e que se diferencia de
+uma porção muito maior, que pode funcionar de forma incorreta, sem afetar a
+segurança do sistema~\cite{lampson1992authentication}.
+
+A definição mais adotada atualmente, entretanto, por ser mais formal, é a de que
+o TCB de um sistema computacional é o conjunto de mecanismos de proteção
+contidos no mesmo, incluindo \textit{software}, \textit{firmware} e \textit
+{hardware}, que combinados são responsáveis pela aplicação de políticas de
+segurança computacionais~\cite{qiu1985trusted}.
+
+Toda aplicação segura precisa definir um TCB, e confiar nele como bloco central
+para as garantias de segurança da aplicação. Em outras palavras, o TCB é a única
+porção de uma aplicação que, possuindo uma vulnerabilidade, poderia ser atacada
+para tentar obter controle indevido sobre a mesma.
+
+Considerando que quanto maior uma aplicação, maior o número de \textit{bugs} e
+vulnerabilidades esperado de se encontrar nela~\cite{mcconnell2004code}, uma boa
+prática na arquitetura e desenvolvimento de um TCB é mantê-lo o menor possível.
+
+\section{Primitivas criptográficas}
+\label{sec:estadoarte_primitivas_cripto}
+
+No centro de quaisquer sistemas computacionais seguros estão as primitivas
+criptográficas. Elas são os blocos mais básicos de tais sistemas, e geralmente
+são criados para realizar uma tarefa bem específica, e de forma bastante
+confiável.
+
+As principais tarefas que podem ser realizadas por primitivas criptográficas --
+lembrando que cada primitiva deve realizar apenas uma função -- são:
+\begin{description}
+    \item [Função \textit{Hash}] -- Produz um valor reduzido da mensagem
+    original. Geralmente é utilizado para verificar a integridade da mensagem.
+    \item [Autenticação] -- Ato de verificar a identidade de alguma entidade.
+    \item [Cifragem simétrica] -- Permite cifrar e decifrar dados usando uma
+    mesma chave.
+    \item [Cifragem assimétrica] -- Permite cifrar e decifrar dados com um par
+    de chaves distintas (uma pública e uma privada).
+    \item [Assinatura digital] -- Permite verificar a autoria de uma mensagem.
+    \item [Geração de números (pseudo) aleatórios] -- Utilizado para prover
+    aleatoriedade necessária para a segurança de várias operações.
+\end{description}
+
+Diferentes implementações de primitivas criptográficas podem prover diferentes
+níveis de segurança. Podemos, dessa forma, dizer que uma primitiva provê $N$
+\textit{bits} de segurança, significando que são necessárias $2^N$ operações
+computacionais para quebrar a sua segurança.
+
+Por constituir a base da construção de sistemas seguros, uma primitiva
+criptográfica precisa ser bastante confiável na realização de sua funçao. Isto
+é, ela precisa prover exatamente o nível de segurança prometido. Exemplificando,
+se uma primitiva diz prover um nível de segurança de $X$ bits, mas pode ter sua
+segurança quebrada com $X-1$ \textit{bits} (necessita apenas da metade de
+operações computacionais que deveria necessitar para ser quebrada), todos os
+protocolos e sistemas contruídos baseados nela passam a ser considerados
+vulneráveis.
+
+Antes de serem utilizadas, primitivas criptográficas devem ser amplamente
+testadas e ter seu nível de segurança formalmente provado. Este é um processo
+bastante lento. Por todos os motivos apontados, e também pela possibilidade da
+inserção de erros durante o processo de desenvolvimento, recomenda-se que
+desenvolvedores não tentem criar as suas próprias primitivas criptográficas, mas
+utilizem as que já estão disponíveis e acolhidas pela comunidade de criptólogos
+e de segurança e privacidade de dados~\cite{menezes1996handbook}.
+
+Por fim, como dito anteriormente, primitivas criptográficas realizam uma única
+função, o que, geralmente, não é suficiente para suprir todas as necessidades de
+um sistema seguro. Dessa forma, é necessário combinar o uso de várias delas para
+a construção de protocolos e sistemas seguros. Por exemplo, para que duas partes
+se comuniquem de forma segura, somente cifrar o dado do lado do remetente e
+decifrá-lo no lado do destinatário não é o suficiente. É necessário, também,
+usar alguma estratégia para verificar a integridade do dado transmitido, uma vez
+que um atacante no meio do caminho poderia modificar a mensagem enviada.
+
+\section{Segurança de dados baseada em \textit{software}}
+\label{sec:estadoarte_seg_soft}
+
+Há várias estratégias para prover segurança e pravacidade através do uso de
+\textit{software}, sendo a maioria delas baseada no uso de criptografia, que
+foram desenvolvidas com o objetivo de prover segurança e privacidade de dados.
+É importante citar que o uso de técnicas de segurança de dados baseadas em
+\textit{software} implica na adição de bibliotecas e APIs ao TCB de uma
+aplicação, tornando-a mais suscetível a vulnerabilidades inseridas durante o
+processo de desenvolvimento das mesmas.
+Além das estratégias baseadas no uso de criptografia, podemos destacar também a
+criação de ambientes isolados, como máquinas virtuais, e cônteineres. Detalhamos
+cada uma destas estratégias a seguir.
+
+\subsection{Sistemas criptográficos}
+\label{subsec:estadoarte_segsoft_sistemas_cripto}
+
+Sistemas criptográficos são constituídos por um conjunto de primitivas
+criptográficas, geralmente sendo compostos de uma primitiva para geração de
+chaves, uma primitiva para cifrar dados, e uma primitiva para decifrar dados.
+
+Um sistema criptográfico pode ser definido formalmente como a tupla ({\ttfamily
+P,C,K,$\varepsilon$,D}), onde:
+\begin{itemize}
+    \item {\ttfamily P} é o conjunto de \textbf{textos puros} existentes;
+    \item {\ttfamily C} é o conjunto de \textbf{cifrotextos} existentes;
+    \item {\ttfamily K} é o conjunto de \textbf{chaves} existentes;
+    \item {\ttfamily $\varepsilon$} é o conjunto de funções $E_{k}: P
+    \rightarrow C$, com $k \in K$, que cifra um texto puro em um cifrotexto;
+    \item {\ttfamily D} é o conjunto de funções $D_{k}: C
+    \rightarrow P$, com $k \in K$, que decifra um cifrotexto em um texto puro;
+    \item $\forall e \in K, \exists d \in K | D_{d}(E_{e}(p)) = p, \forall p \in
+    P$.
+\end{itemize}
+
+Em relação à última propriedade citada, é importante apontar que existem
+sistemas criptográficos simétricos e assimétricos. Em um sistema criptográfico
+simétrico, temos que $e = d$, \textit{i.e.}, a chave utilizada para cifrar um
+texto puro é a mesma utilizada para decifrar o cifrotexto gerado. Como exemplo
+de algoritmo de criptografia simétrica atualmente em uso, podemos citar o AES,
+do inglês \textit{Advanced Encryption Standard}~\cite{aes2001}.
+
+Já em um sistema criptográfico assimétrico, também conhecido como criptografia
+de chave pública, temos que $e \neq d$, \textit{i.e.}, há a necessidade da
+criação de duas chaves distintas, sendo uma mantida em segredo (\textbf{chave
+privada}), e uma tornada pública (\textbf{chave pública}) para a utilização por
+outras partes. Se uma das chaves é utilizada para cifrar um texto plano, o seu
+par deve ser utilizado para decifrar o cifrotexto. Além das funcionalidades de
+cifrar e decifrar textos, sistemas criptográficos assimétricos também podem ser
+utilizados para provar a origem de uma mensagem (\textbf{assinatura digital}),
+negociar uma chave simétrica de forma segura (\textit{e.g.}, algoritmo 
+Diffie-Hellman~\cite{merkle1978secure}), e até mesmo para realizar processamento
+de dados utilizando apenas seu cifrotexto (\textit{e.g.}, criptografia
+homomórfica). Algoritmos de criptografia assimétrica, entretanto, demandam um
+processamento geralmente muito mais complexo do que algoritmos de criptografia
+simétricos. É interessante, portanto, combinar ambas as técnicas para alcançar
+os objetivos de segurança sem comprometer a performance do sistema.
+
+A técnica de criptografia homomórfica, citada anteriormente, permite o
+processamento de dados na forma de cifrotexto. Isso possibilita, por exemplo,
+que seja realizada a busca por uma entrada cifrada em um banco de dados, também
+cifrado, sem permitir que nenhuma informação sobre a entrada e sobre o banco de
+dados seja extraída por algum atacante em controle da máquina onde a operação
+está sendo executada. Estudos anteriores~\cite{sac2017}, porém, mostraram que
+esta técnica é extremamente custosa em comparação a outras técnicas de segurança
+baseadas em \textit{hardware}, sendo impraticável o seu uso em aplicações reais.
+
+\subsection{Isolamento de recursos}
+\label{subsec:estadoarte_segsoft_isolamento_recursos}
+
+Outra forma de proteção de dados baseada em \textit{software}, é o uso de
+técnicas de isolamento de recursos de uma máquina física, para que sejam
+utilizados, idealmente, por um único usuário ou aplicação.
+
+Uma das técnicas de isolamento de recursos, amplamente utilizada na atualidade,
+é a de virtualização. Na técnica de virtualização, ambientes isolados, aqui
+chamados de \textbf{máquinas virtuais} (VMs, do inglês \textit{Virtual
+Machines}), são criados com o objetivo de emular as funcionalidades de uma
+máquina física, e proteger estes ambientes contra outros que coexistam na mesma
+máquina hospedeira. Várias implementações de virtualização existem hoje no
+mercado~\cite{qemu,xen,kvm,vmware}, e são utilizadas principalmente em
+ambientes de computação na nuvem, sejam elas privadas ou públicas.
+
+Para a criação de VMs, é necessário o uso de um componente conhecido como
+hipervisor. Ele é responsável por criar e executar as VMs, assim como prover
+uma interface entre as VMs e o \textit{hardware} real. Desta forma, o uso de
+virtualização para a proteção de dados sensíveis requer a adição deste
+componente ao TCB da aplicação como um todo.
+
+Ao decorrer do tempo, várias vulnerabilidades foram encontradas em hipervisores,
+possibilitando que atacantes, a partir de VMs, ganhassem total controle sobre o
+hipervisor, o utilizassem para ganhar acesso à outras VMs residentes na mesma
+máquina~\cite{kortchinsky2009cloudburst}.
+
+\subsection{Considerações}
+Concluímos a seção apontando que soluções de segurança baseadas em \textit
+{software} podem gerar um grande TCB nas aplicações que as utilizam, e
+consequentemente, podem aumentar a probabilidade de inserção de uma série de
+vulnerabilidades na aplicação. Além disso, outras soluções, apesar de já terem
+seu uso estabelecido na comunidade, como é o caso de criptografia assimétrica,
+ou estarem sendo bastante pesquisadas, como é o caso de criptografia
+homomórfica, acabam gerando um grande custo computacional, prejudicando o
+desempenho das aplicações que as utilizam.
+
+\section{Segurança de dados baseada em \textit{hardware}}
+\label{sec:estadoarte_seg_hard}
+
+Como introduzido na Seção~\ref{sec:intro_contextualizacao}, o crescente volume
+de dados sensíveis sendo enviados e processados em ambientes de computação na
+nuvem levou à definição de um TEE, que facilitaria o desenvolvimento de soluções
+com garantias de segurança e privacidade de dados.
+
+As soluções para segurança de dados baseadas em \textit{hardware} geralmente se
+dão através da implementação de um TEE como parte de um microprocessador, com o
+objetivo de isolar dados de um processo em execução dos demais processos que
+executam na mesma máquina. Tais soluções, em geral, são computacionalemente mais
+eficientes que soluções baseadas em \textit{software}, porém, para serem
+utilizadas, elas requerem o uso de \textit{hardware} específico, que nem sempre
+está disponível nos ambientes onde as apicações serão executadas.
+
+Como exemplos de implementações existentes no mercado, podemos citar as soluções
+que buscam separar o espaço de memória de uma máquina em duas áreas distintas,
+uma segura, e uma sem garantias de segurança, como é o caso do ARM
+TrustZone~\cite{trustzone} e o AMD SME/SEV~\cite{amdSMESEV}. Nestas
+implementações, desenvolvedores de aplicações definem quais porções de dados
+devem ser considerados sensíveis, e o processador se encarrega de mantê-los em
+memória de uma forma criptograficamente segura. Em ambos os casos, todos os
+dados sensíveis, mesmo que pertencentes a diferentes aplicações são mantidos em
+um mesmo TEE. Uma outra implementação possível, que é a adotada pelo Intel
+SGX~\cite{mckeen2013innovative}, busca separar o espaço de memória de uma
+máquina entre uma área insegura, e várias áreas isoladas seguras. Nesta solução,
+cada aplicação pode possuir uma área de memória segura para armazenar e
+processar dados sensíveis, e duas aplicações distintas não podem compartilhar o
+mesmo espaço de memória seguro, alcançando total isolamento entre aplicações
+distintas.
+
+Dentre as tecnologias para segurança baseada em \textit{hardware} mencionadas,
+Intel SGX é a que se mostra como sendo mais promissora, e como tendo o maior
+número de pessoas envolvidas em pesquisas sobre a mesma, possivelmente devido
+à facilidade de acesso a processadores compatíveis com a tecnologia. Desta
+forma, SGX foi escolhida como objeto de estudo deste trabalho.
+
+\section{Trabalhos relacionados}
+\label{sec:estadoarte_trabalhos_relacionados}
+
+Desde a publicação inicial~\cite{mckeen2013innovative}, feita em 2013, até a
+atualidade, diversas pesquisas sobre Intel SGX já foram divulgadas. Estas
+pesquisas são voltadas para diversos aspectos da tecnologia, que incluem seu uso
+em aplicações reais~\cite{krawiecka2016protecting,fetzer2016building,sac2017},
+ferramentas para facilitar o desenvolvimento de aplicações SGX~\cite
+{scone,tsai2017graphene,baumann2015shielding,DynSGXCloudCom2017}, implementações
+de ataques de canal lateral~\cite
+{hahnel2017high,cachezoom2017,schwarz2017malware}, e construção de enclaves mais
+seguros~\cite{gruss2017strong,lind2017glamdring,kuvaiskii2017sgxbounds}.
+
+Arnautov \textit{et al.} propuseram a ferramenta SCONE, que tem como objetivo
+executar aplicações não modificadas dentro de enclaves SGX~\cite{scone}. Esta abordagem
+facilita a criação de aplicações seguras a partir de aplicações existentes,
+porém, ao inserir a aplicação por completo no enclave SGX, o seu TCB é
+aumentado. Esta solução vai de encontro com a recomendação da Intel, de que
+aplicações SGX devem manter apenas o mínimo de código possível dentro dos
+enclaves. Por outro lado, ela facilita o processo de criação de uma aplicação
+segura, pois não exige que o desenvolvedor aprenda a usar toda a API do Intel
+SGX para utilizar suas capacidades de segurança e privacidade.
+
+Lind \textit{et al.} propuseram a ferramenta Glamdring, que tem como objetivo
+facilitar o desenvolvimento de aplicações SGX, provendo o particionamento
+automático das mesmas~\cite{lind2017glamdring}. Para isso, o desenvolvedor deve
+utilizar anotações de código para marcar quais dados são considerados sensíveis
+na sua aplicação. Após a marcação feita manualmente pelo desenvolvedor, a
+ferramenta gera o código da aplicação particionado entre as partes segura e
+insegura, mantendo o mínimo possível de código dentro do enclave. Como veremos
+mais à frente, no Capítulo~\ref{chapter:abordagem} esta estratégia não é a ideal
+em todos os cenários.
+
+Por fim, é importante falar sobre os trabalhos sobre ataques de canal lateral. A
+Intel deixa claro na documentação do SGX~\cite{sgxdeveloperreference} que a
+tecnologia, por si só, não é protegida contra ataques de canal lateral. Isto
+quer dizer que é possível deduzir informações sobre os dados sensíveis sendo
+processados através da observação do comportamento de outros componentes do
+sistema, como comportamento da \textit{cache}, utilização de \textit{CPU},
+consumo de energia, \textit{etc}. Götzfried \textit{et al.} demonstraram ser
+possível realizar ataques à \textit{cache} do processador para obter dados
+sensíveis do SGX~\cite{gotzfried2017cache}.
+
+Apesar de ataques de canal lateral serem possíveis de se realizar em aplicações
+SGX, eles podem ser evitados através de boas práticas no desenvolvimento das
+aplicações seguras. Por exemplo, Gruss \textit{et al.} propuseram um mecanismo
+capaz de evitar o mesmo tipo de ataques à \textit{cache} do processador citado
+anteriormente~\cite{gruss2017strong}.
+
+\section{Considerações}
+\label{sec:estadoarte_consideracoes_finais}
+
+Devido ao crescente volume de dados sensíveis sendo enviados e processados em
+ambientes de computação na nuvem, faz-se necessário tomar medidas para prover
+proteções contra publicação e modificação de tais dados de forma indevida. Neste
+capítulo discutimos que tais medidas podem ser implementadas através do uso de
+técnicas baseadas em \textit{hardware} ou \textit{software}.
+
+As soluções baseadas em \textit{software} têm a vantagem de não depender de um
+\textit{hardware} específico para serem utilizadas, porém, na maioria das vezes,
+incorrem no aumento do TCB das aplicações, e na perda de desempenho das mesmas.
+
+As soluções baseadas em \textit{hardware}, por sua vez, em geral têm um menor
+TCB, diminuindo o risco da adição de vulnerabilidades durante o processo de
+desenvolvimento das aplicações, e têm uma melhor performance em comparação a
+soluções baseadas em \textit{software}, porém, necessitam ser executadas em
+ambientes com uma configuração de \textit{hardware} específica disponível.
+
+Uma das soluções baseadas em \textit{hardware} é o Intel SGX. Ela pode ser usada
+para proteger código de aplicações contra modificação, e proteger dados de
+aplicações contra modificação e acessos não autorizados. Várias pesquisas sobre
+aplicações de Intel SGX, suas possíveis vulnerabilidades, e como mitigar estas
+vulnerabilidades, podem ser encontradas na literatura, porém elas não avaliam o
+impacto de vários aspectos na performance e nas garantias de segurança de tais
+aplicações.
+
+Considerando todos estes pontos, nos capítulos que seguem, detalhamos a
+tecnologia Intel SGX, apontamos como diversos fatores devem ser considerados
+durante o processo de desenvolvimento de aplicações seguras usando SGX, e
+propomos um conjunto de ferramentas que facilitam o desenvolvimento de
+aplicações SGX, bem como ajudam a superar alguns desafios do uso da tecnologia
+em ambientes reais.

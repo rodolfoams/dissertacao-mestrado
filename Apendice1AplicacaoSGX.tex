@@ -1,0 +1,195 @@
+\chapter{Exemplo de aplicação SGX}
+\label{appendix:aplicacao_sgx}
+
+Como discutido na Seção~\ref{sec:sgx_modelo_programacao}, aplicações SGX são
+divididas entre parte segura, que executa dentro de enclaves SGX, e parte
+insegura, usada para instanciar o enclave da aplicação, executar ações que não
+necessitem de garantias de segurança, e intermediar qualquer tipo decomunicação
+entre um enclave e o mundo externo a ele, inclusive a execução de \textit
+{system calls}. Além disso, precisamos definir uma interface de comunicação
+entre as partes segura e insegura (arquivo EDL).
+
+Para exemplificar o desenvolvimento de aplicações SGX, utilizamos a seguir a
+aplicação utilizada nos experimentos da Seção~\ref
+{sec:abordagem_particionamento_dados}.
+
+\section{Desenvolvimento do arquivo EDL}
+\label{sec:appendix_aplicacao_sgx_arquivo_edl}
+
+A primeira coisa a se pensar no desenvolvimento de aplicações SGX é em como
+particionar a aplicação entre as partes segura e insegura, e, mais precisamente,
+é necessário pensar em como ambas as partes se comunicam entre si. Para isso,
+precisamos escrever um arquivo EDL, contendo a declaração das ECalls (declaradas
+na seção \textit{trusted} do arquivo EDL), e das OCalls (declaradas na seção
+\textit{untrusted} do arquivo EDL).
+
+No caso da aplicação em questão, apenas a função \textit{enclave\_sum} cruza
+entre as partes segura e insegura. O conteúdo do arquivo EDL está descrito no
+Código Fonte~\ref{lst:arquivo_edl}. No código apresentado, o parâmetro "\textit
+{in}", entre colchetes, indica que o \textit{array} é um ponteiro de entrada, ou
+seja, será copiado da parte insegura para o enclave antes da execução da função
+\textit{enclave\_sum}. O parâmetro "\textit{size=array\_size}" indica que o
+tamanho do \textit{array}, em \textit{bytes}, é dado pela variável \textit
+{array\_size}. 
+
+\begin{lstlisting}[language=C, label=lst:arquivo_edl, caption={Arquivo EDL
+contendo a declaração das funções que cruzam a fronteira entre as partes segura
+e insegura da aplicação SGX.}]
+    // Arquivo enclave.edl
+    enclave{
+        trusted{
+            public long enclave_sum(
+                [in, size=array_size] int *array,
+                                   size_t  array_size
+            );
+        };
+        untrusted{}; // Nenhuma função a declarar aqui.
+    };
+\end{lstlisting}
+
+Após a criação do arquivo EDL, utlizamos a ferramenta \textit{sgx\_edger8er} para
+compilar o arquivo EDL, e gerar as interfaces de comunicação entre as partes
+segura e insegura propriamente ditas. Executamos, portanto, os comandos
+\lstinline[breaklines=true,keywordstyle=\ttfamily]!sgx_edger8r --trusted enclave.edl --search-path ${SGXSDK_PATH}/include!
+e \lstinline[breaklines=true,keywordstyle=\ttfamily]!sgx_edger8r --untrusted enclave.edl --search-path ${SGXSDK_PATH}/include!,
+para gerar os arquivos de interface a serem utilizados, respectivamente, pelas
+partes segura e insegura da aplicação.
+
+Mais informações sobre a sintaxe dos arquivos EDL pode ser encontrada no
+documento de referência para desenvolvedores~\cite{sgxdeveloperreference}.
+
+\section{Desenvolvimento do enclave}
+\label{sec:appendix_aplicacao_sgx_codigo_enclave}
+
+O código do enclave contém a implementação de todas as ECalls declaradas no
+arquivo EDL, adicionando-se o código de quaisquer funções internas necessárias.
+No caso da aplicação em questão, precisamos escrever apenas a implementação da
+função \textit{enclave\_sum}. Tal implementação pode ser encontrada no Código
+Fonte~\ref{lst:arquivo_enclave_cpp}.
+
+\newpage
+\begin{lstlisting}[language=C, label=lst:arquivo_enclave_cpp, caption={Arquivo
+contendo a implementação das funções a serem executadas totalmente dentro do
+enclave da aplicação SGX.}]
+    // Arquivo enclave.cpp
+    #include "stdlib.h"
+    #include "enclave_t.h" // Gerado pela ferramenta sgx_edger8er
+
+    long enclave_sum( int *array, size_t array_size) {
+        long sum = 0;
+        int i;
+        for (i=0; i<array_size/sizeof(int); ++i){
+            sum += array[i];
+        }
+        return sum;
+    }
+\end{lstlisting}
+
+O enclave deve, então, ser compilado com o compilador \textit{g++}, de modo a
+gerar uma biblioteca dinâmica (\textit{.so} no caso do Linux, ou \textit{.dll}
+no caso do Windows). Por fim, o enclave deve ser assinado usando a ferramenta
+\textit{sgx\_signer}, usando o comando
+\lstinline[breaklines=true,keywordstyle=\ttfamily]!sgx_signer sign -key priv_key -enclave enclave.so -out enclave.signed.so -config enclave.config.xml!,
+onde {\ttfamily priv\_key} é a chave privada do desenvolvedor, {\ttfamily
+enclave.so} é a biblioteca dinâmica do enclave produzido pelo \textit
+{sgx\_edger8er}, {\ttfamily enclave.signed.so} é o enclave resultante, assinado,
+e {\ttfamily enclave.config.xml} é o arquivo de configuração das características
+do enclave SGX, conforme exibido no Código Fonte~\ref
+{lst:arquivo_enclave_config_xml}.
+
+Entre as configurações do arquivo \textit{enclave.config.xml} que podemos,
+destacar, estão o tamanho máximo da \textit{heap} e tamanho máximo da pilha do
+enclave. Ambas configurações têm impacto no direto no tempo necessário para a
+instanciação de um enclave, pois o SGX aloca todo esse espaço de memória durante
+a instanciação do enclave. No caso caso específico da configuração do enclave
+utilizada nos experimentos da Seção~\ref{sec:abordagem_particionamento_dados},
+a instanciação de um enclave levava cerca de 30 segundos para completar.
+Enclaves com tamanhos máximos de \textit{heap} e pilha menores que os usados
+nesta configuração levam menos tempo para serem instanciados.
+
+\newpage
+\begin{lstlisting}[language=XML, label=lst:arquivo_enclave_config_xml, caption={Arquivo
+de configuração do enclave SGX.}]
+    // Arquivo enclave.config.xml
+    <EnclaveConfiguration>
+    <ProdID>0</ProdID>
+    <ISVSVN>0</ISVSVN>
+    <StackMaxSize>0x8000</StackMaxSize>
+    <HeapMaxSize>0x100000000</HeapMaxSize>
+    <TCSNum>10</TCSNum>
+    <TCSPolicy>1</TCSPolicy>
+    <DisableDebug>0</DisableDebug>
+    <MiscSelect>0</MiscSelect>
+    <MiscMask>0xFFFFFFFF</MiscMask>
+</EnclaveConfiguration>
+\end{lstlisting}
+
+Mais informações sobre o arquivo de configuração do enclave podem ser
+encontradas no documento de referência para desenvolvedores~\cite
+{sgxdeveloperreference}.
+
+\section{Desenvolvimento da parte insegura da aplicação}
+\label{sec:appendix_aplicacao_sgx_parte_insegura}
+
+A parte insegura de uma aplicação SGX compreende todo o código que lida com
+dados não sensíveis, adicionando-se o código necessário para instanciar e se
+comunicar com o enclave, e a implementação de quaisquer OCalls que tenham sido
+declaradas no arquivo EDL. No caso da aplicação em questão, nenhuma OCall
+precisa ser implementada. O código necessário para a parte insegura desta
+aplicação, é exibido no Código Fonte~\ref{lst:arquivo_app_cpp}.
+
+O fluxo da aplicação pode ser descrito nos seguintes passos:
+
+\begin{enumerate}
+    \item A aplicação instancia o enclave SGX (linhas 13-19);
+    \item A aplicação gera um \textit{array} com 1GB, povoado por números
+    inteiros aleatórios (linhas 20-22);
+    \item A aplicação invoca a função do enclave que calcula a soma dos valores
+    contidos em uma partição do \textit{array} (linha 29);
+    \item A aplicação soma o resultado obtido do enclave ao total armazenado na
+    variável \textit{sum} (linha 30);
+    \item A aplicação repete os passos 3 e 4 até que todas as partições do
+    \textit{array} tenham sido processadas (linhas 27-31);
+    \item A aplicação exibe o resultado da soma de todos os elementos do \textit
+    {array} (linha 32);
+    \item A aplicação destrói o enclave (linha 33).
+\end{enumerate}
+
+\begin{lstlisting}[language=C, label=lst:arquivo_app_cpp, caption={Arquivo
+contendo a implementação da parte insegura da aplicação SGX.}]
+    // Arquivo app.cpp
+    #include "stdlib.h"
+    #include "enclave_u.h" // Gerado pela ferramenta sgx_edger8er
+    #include "sgx_urts.h" // Necessário para instanciar enclaves
+
+    #define ENCLAVE_NAME "enclave.signed.so"
+    #define MB_SIZE 1024*1024
+    #define ARRAY_SIZE 4096
+    #define CHUNK_SIZE 1
+
+    int main(){
+
+        sgx_enclave_id_t eid;
+        sgx_status_t ret = SGX_SUCCESS;
+        sgx_launch_token_t launch_token;
+        int updated = 0;
+        ret = sgx_create_enclave( // Instancia um enclave SGX
+                ENCLAVE_NAME, SGX_DEBUG_FLAG, &launch_token,
+                &updated, &eid, NULL );
+        int total_num_of_elements = ARRAY_SIZE * MB_SIZE / sizeof(int);
+        int *array = (int *) calloc(total_num_of_elements,sizeof(int));
+        generate_random_numbers(array, total_num_of_elements); // Preenche array com números inteiros aleatórios
+        int chunk_num_of_elements = CHUNK_SIZE * MB_SIZE / sizeof(int);
+        long sum = 0, partial_sum;
+        int i, idx;
+
+        for(i=0; i<total_num_of_elements/chunk_num_of_elements; ++i){
+            idx = i*chunk_num_of_elements;
+            enclave_sum(eid, &partial_sum, &array[idx], CHUNK_SIZE);
+            sum += partial_sum;
+        }
+        printf("A soma dos elementos do array é: %ld.\n", sum);
+        sgx_destroy_enclave(eid);
+        return 0;
+    }
+\end{lstlisting}

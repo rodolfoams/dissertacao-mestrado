@@ -1,0 +1,238 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% Para utilizar ese modelo sao necessarios os seguintes arquivos:
+%%
+%% copin.cls
+%% copin.sty
+%% mestre.sty
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[a4paper,titlepage]{sty/copin}
+
+\usepackage[portuges,english]{babel}
+\usepackage{sty/copin,sty/mestre,epsfig}
+\usepackage{times}
+\usepackage{url}
+\usepackage{icomma}
+
+\makeatletter
+\g@addto@macro{\UrlBreaks}{\UrlOrds}
+\makeatother
+\usepackage{footmisc}
+\usepackage{pifont}
+\usepackage{xcolor}
+\definecolor{britishracinggreen}{rgb}{0.0, 0.26, 0.15}
+\definecolor{gray}{rgb}{0.4,0.4,0.4}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.6}
+\definecolor{cyan}{rgb}{0.0,0.6,0.6}
+\usepackage{chngcntr}
+\counterwithout{footnote}{chapter}
+
+%-------------------------- Para usar acentuacaoo em sistemas ISO8859-1 ------------------------------------
+% Se estiver usando o Microsoft Windows ou linux com essa codificacao, descomente essa linhas abaixo
+% e comente as linhas referentes ao UTF8
+%\usepackage[latin1]{inputenc} % Usar acentuacao em sistemas ISO8859-1, comentar a linha com  \usepackage[utf8x]{inputenc}
+%-----------------------------------------------------------------------------------------------------
+
+%-------------------------- Para usar acentuacao em sistemas UTF8 ------------------------------------
+% Para a maior parte das distribuicoes linux, usar a opcao utf8x (lembrar de comentar as linha referente a ISO8859-1 acima)
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+%\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+%-----------------------------------------------------------------------------------------------------
+
+
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\graphicspath{{img/}}
+\DeclareGraphicsExtensions{.pdf,.jpeg,.png,.eps}
+\usepackage[caption=false,font=footnotesize,labelfont=sf,textfont=sf]{subfig}
+\usepackage{longtable} %tabelas longas, para tabelas que ultrapassam uma pagina
+%\input{psfig.sty}
+\usepackage{pdfpages}
+
+
+% ----------------- Para inserir codigo fonte de linguagens de programacao no documento -------------
+\usepackage{listings}
+\lstset{language=C,
+	breaklines=true,
+    xleftmargin=9pt,
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{olive}\bfseries\ttfamily,
+    stringstyle=\color{red}\ttfamily,
+    commentstyle=\color{britishracinggreen}\ttfamily,
+    morecomment=[l][\color{magenta}]{\#},
+    directivestyle={\color{RawSienna}},
+    numbers=left, % where to put the line-numbers
+    numberstyle=\scriptsize,
+    backgroundcolor=\color{white},
+    emph={uint8_t},emphstyle={\color{olive}\bfseries\ttfamily},
+	showstringspaces=false,
+	firstnumber=1,
+    extendedchars=true,
+    inputencoding=utf8x,
+	frame=tb
+}
+
+\lstset{language=XML,
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  showstringspaces=false,
+  commentstyle=\color{gray}\upshape
+}
+
+\lstdefinelanguage{XML}
+{
+  morestring=[b]",
+  morestring=[s]{>}{<},
+  morecomment=[s]{<?}{?>},
+  stringstyle=\color{black},
+  identifierstyle=\color{darkblue},
+  keywordstyle=\color{cyan},
+  morekeywords={xmlns,version,type}% list your attributes here
+}
+
+\lstdefinelanguage
+   [x64]{Assembler}     % add a "x64" dialect of Assembler
+   [x86masm]{Assembler} % based on the "x86masm" dialect
+   % with these extra keywords:
+   {morekeywords={CDQE,CQO,CMPSQ,CMPXCHG16B,JRCXZ,LODSQ,MOVSXD, %
+                  POPFQ,PUSHFQ,SCASQ,STOSQ,IRETQ,RDTSCP,SWAPGS,retq} %
+                  %rax,rdx,rcx,rbx,rsi,rdi,rsp,rbp, %
+                  %r8,r8d,r8w,r8b,r9,r9d,r9w,r9b} %
+                  } % etc.
+
+\lstset{language=[x64]Assembler,
+    breaklines=true,
+    xleftmargin=9pt,
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{olive}\bfseries\ttfamily,
+    stringstyle=\color{red}\ttfamily,
+    commentstyle=\color{britishracinggreen}\ttfamily,
+    morecomment=[l][\color{magenta}]{\#},
+    directivestyle={\color{RawSienna}},
+    numbers=left, % where to put the line-numbers
+    numberstyle=\scriptsize,
+    backgroundcolor=\color{white},
+    showstringspaces=false,
+    extendedchars=true,
+    inputencoding=utf8x,
+    keywords={push, mov, add, pop, retq}
+}
+
+\lstset{literate={á}{{\'{a}}}1 {é}{{\'{e}}}1 {í}{{\'{i}}}1 {ó}{{\'{o}}}1 {ú}{{\'{u}}}1 {ç}{{\c{c}}}1 {à}{{\`{a}}}1 {â}{{\^{a}}}1 {ê}{{\^{e}}}1 {ô}{{\^{o}}}1 {ã}{{\~{a}}}1 {õ}{{\~{o}}}1}
+
+\renewcommand{\lstlistingname}{Código Fonte}
+\renewcommand{\lstlistlistingname}{Lista de Códigos Fonte}
+\newcommand\fixme[1]{\textcolor{red}{#1}}
+\newcommand\comment[1]{\textcolor{blue}{#1}}
+% ---------------------------------------------------------------------------------------------------
+
+\selectlanguage{portuges}
+\sloppy
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Titulo{Desafios no Desenvolvimento de Aplicações\\Seguras Usando Intel SGX}
+\Autor{Rodolfo de Andrade Marinho Silva}
+\Data{01 de março de 2018}
+\Area{Ciência da Computação}
+\Pesquisa{Segurança da Informação}
+\Orientadores{Andrey Elísio Monteiro Brito  \\
+	 (Orientador)}
+
+\newpage
+\cleardoublepage
+
+\PaginadeRosto
+
+\newpage
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{resumo} 
+\input{Resumo}
+\end{resumo}
+
+\newpage
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{summary}
+\input{Abstract}
+\end{summary}
+
+\newpage
+\cleardoublepage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{agradecimentos}
+\input{Agradecimentos}
+\end{agradecimentos}
+
+\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Definicao do cabecalho: secao do lado esquerdo e numero da pagina do lado direito
+\pagestyle{fancy}
+\addtolength{\headwidth}{\marginparsep}\addtolength{\headwidth}{\marginparwidth}\headwidth = \textwidth
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}\lhead[\fancyplain{}{\bfseries\thepage}]%
+	     {\fancyplain{}{\emph{\rightmark}}}\rhead[\fancyplain{}{\bfseries\leftmark}]%
+             {\fancyplain{}{\bfseries\thepage}}\cfoot{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\selectlanguage{portuges}
+
+\Sumario
+\ListadeSimbolos
+\listoffigures
+\listoftables
+\lstlistoflistings %lista de codigos fonte - Para inserir a listagem de codigos fonte
+\newpage
+\cleardoublepage
+
+\Introducao
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Hifenizacao - Colocar lista de palavras que nao devem ser separadas e que 
+% nao estao no dicionario portugues.
+% As palavras do dicionario portugues ja sao separadas corretamente pelo lateX
+%
+\hyphenation{ Hardware Software Intel recursive etc }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% A partir daqui coloque seus capitulos. Sugere-se que eles sejam inseridos com o comando \input
+%% Da seguinte maneira:
+%%
+%% \input{cap1} 
+%% \input{cap2}
+% \input{Capitulo0TODOlist}
+\input{Capitulo1Introducao}
+\input{Capitulo2EstadoDaArte}
+\input{Capitulo3IntelSGX}
+\input{Capitulo4Abordagem}
+\input{Capitulo5DynSGX}
+\input{Capitulo6Conclusao}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% BIbliografia
+%% Coloque suas referencias no arquivo ref.bib e descomente as proximas duas linhas
+
+\bibliographystyle{alpha} % estilo de bibliografia   plain,unsrt,alpha,abbrv.
+\bibliography{bib/ref} % arquivos com as entradas bib.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Apendice
+% Caso seja necessario algum apendice, descomente a proxima linha.
+
+\appendix
+\input{Apendice1AplicacaoSGX}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}

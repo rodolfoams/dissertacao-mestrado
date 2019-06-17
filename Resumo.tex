@@ -1,0 +1,28 @@
+No decorrer das últimas décadas, uma quantidade de dados de usuários cada vez
+maior vem sendo enviada para ambientes não controlados pelos mesmos. Em alguns
+casos esses dados são enviados com o objetivo de tornar esses dados públicos,
+mas na grande maioria das vezes há a necessidade de manter esses dados seguros e
+privados, ou autorizar o seu acesso apenas em usos bem específicos. Considerando
+o caso onde os dados devem ser mantidos privados, entidades devem tomar cuidados
+especiais para manter a segurança e privacidade de tais dados tanto durante a
+transmissão quanto durante o armazenamento e processamento dos mesmos. Com esse
+objetivo, vários esforços vêm sendo feitos, inclusive o desenvolvimento de
+componentes de \textit{hardware} que provêem ambientes de execução confiável,
+\textit{TEEs}, como o \textit{Intel Software Guard Extensions} (\textit{SGX}).
+O uso dessa tecnologia, porém, pode ser feito de forma incorreta ou ineficiente,
+devido a cuidados não observados durante o desenvolvimento de aplicações.
+
+O trabalho apresentado nessa dissertação aborda os principais desafios
+enfrentados no desenvolvimento de aplicações que façam uso de \textit{SGX}, e
+propõe boas práticas e um conjunto de ferramentas (\textit{DynSGX}) que ajudam
+a fazer melhor uso das capacidades da tecnologia. Tais desafios incluem, mas não
+são limitados a, particionamento de aplicações de acordo com o modelo de
+programação do SGX, colocação de aplicações em ambientes de computação na nuvem,
+e, sobretudo, gerência de memória.
+
+Os estudos apresentados neste trabalho apontam que o mal uso da tecnologia pode
+acarretar em uma perda de performance considerável se comparado com
+implementações que levam em conta as boas práticas propostas. O conjunto de
+ferramentas proposto neste trabalho também mostrou possibilitar a proteção de
+código de aplicações em ambientes de computação na nuvem, com uma sobrecarga
+desprezível em comparação com o modelo de programação padrão de SGX.

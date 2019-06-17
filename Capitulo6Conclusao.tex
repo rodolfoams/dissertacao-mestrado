@@ -1,0 +1,79 @@
+\chapter{Conclusão}
+\label{chapter:conclusao}
+
+Neste capítulo, apresentamos, na Seção~\ref{sec:conclusao_sumario}, um sumário
+do que foi proposto e realizado nesta pesquisa. Além disso, apresentamos algumas
+considerações sobre as análises feitas, bem como sobre a ferramenta proposta no
+Capítulo~\ref{chapter:dynsgx}. Por fim, na Seção~\ref
+{sec:conclusao_limitacoes_trabalhos_futuros}, apresentamos as limitações deste
+trabalho, e possíveis trabalhos futuros.
+
+\section{Sumário}
+\label{sec:conclusao_sumario}
+
+Nesta pesquisa de mestrado discutimos os principais desafios no desenvolvimento
+de aplicações com propriedades de segurança e privacidade de dados, usando a
+tecnologia Intel SGX. Para tanto, no Capítulo~\ref{chapter:abordagem}, 
+analisamos como várias decisões na implementação e no uso de aplicações SGX
+influenciam no seu desempenho geral, e nas garantias de segurança realacionadas
+ao tamanho do TCB da aplicação. As características analisadas incluem como
+devemos gerenciar a memória de enclaves SGX, como deve ser o particionamento
+entre parte segura e parte insegura das aplicações SGX, e como deve ser o
+particionamento dos dados a serem processados dentro de enclaves SGX.
+
+As análises apresentadas servem para auxiliar desenvolvedores na tomada de
+decisões sobre boas práticas a serem aplicadas na arquitetura de aplicações
+seguras, diferenciando-se no particionamento de código e dados, e gerência de
+memória de tais aplicações em comparação a aplicações inseguras, onde esses
+aspectos não têm tanto impacto.
+
+Este trabalho foi motivado pela crescente popularidade do uso da tecnologia
+Intel SGX para desenvolver aplicações que proveem segurança e privacidade de
+dados, observada na literatura, e pela falta da definição de padrões no
+desenvolvimento de tais aplicações, a não ser as recomendações feitas pela
+própria Intel. Em experimentos realizados em nosso ambiente, constatamos que o
+mau planejamento de uma aplicação SGX pode acarretar uma grande perda de
+desempenho da mesma, chegando a um custo de execução até $534\%$ mais alto,
+comparado a aplicações bem planejadas.
+
+Considerando as análises feitas, propomos uma ferramenta, DynSGX, que serve
+como uma alternativa ao modelo de programação do Intel SGX, facilitando o uso
+desta tecnologia, \textit{i.e.}, não requer que o desenvolvedor conheça o SGX
+SDK, e o gerenciamento de memória de suas aplicações SGX. Nós avaliamos esta
+ferramenta, por meio de experimentos, comparando o seu desempenho com o
+desempenho de uma aplicação desenvolvida usando o modelo de programação
+tradicional do Intel SGX. Os resultados obtidos nos experimentos indicam que
+o DynSGX pode ser utilizado de forma eficiente para o processamento de funções
+iterativas, gerando uma sobrecarga de apenas $2,5\%$ em relação ao uso de SGX
+puro, porém o seu uso para processamento de funções recursivas pode ter
+uma performance muito inferior à solução que usa SGX puro. 
+
+\section{Limitações e trabalhos futuros}
+\label{sec:conclusao_limitacoes_trabalhos_futuros}
+
+Apesar de mostrar algumas das características de aplicações SGX que afetam o seu
+desempenho, a lista aqui apresentada não é exaustiva, e não considera como duas
+ou mais características em conjunto podem impactar no desempenho das aplicações.
+Desta forma, mais análises precisam ser feitas para determinar outras boas
+práticas a serem aplicadas no desenvolvimento de aplicações SGX.
+
+A segunda limitação deste trabalho está na forma como foi avaliada a segurança
+das aplicações, onde apenas foi considerado o tamanho do TCB.
+
+Uma outra limitação deste trabalho diz respeito à ferramenta proposta, DynSGX.
+O DynSGX foi desenvolvido com o intuito de funcionar como uma plataforma de
+função como um serviço (FaaS, do inglês \textit{Function as a Service}). A sua
+implementação atual, porém, requer que ambos o desenvolvedor e o usuário das
+funções carregadas no \texttt{DynSGX enclave} sejam a mesma pessoa, de modo a
+ganhar confiança em relação a segurança e privacidade dos dados processados.
+Além disso, como citado anteriormente, a tarefa de remover funções do enclave do
+DynSGX é demasiadamente mecanizada. A automatização desta tarefa deve ser
+tratada em uma futura versão do DynSGX.
+
+Como possíveis trabalhos futuros, além de solucionar as limitações destacadas,
+propomos a evolução do DynSGX, de forma a transformá-lo em uma plataforma
+completa de aplicações \textit{serverless}, possibilitando o desenvolvimento e
+uso de aplicações por pessoas diferentes, com garantias de segurança e
+privacidade de dados e código carregados na plataforma. Essa abordagem permite
+maiores facilidade e segurança no desenvolvimento de aplicações SGX, bem como um
+melhor gerenciamento automático de memória utilizada pelos enclaves do DynSGX.

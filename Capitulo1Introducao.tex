@@ -1,0 +1,222 @@
+\chapter{Introdução}
+\label{chapter:intro}
+
+\section{Contextualização}
+\label{sec:intro_contextualizacao}
+
+\subsection{Segurança e privacidade}
+\label{subsec:intro_contextualizacao_seguranca_privacidade}
+
+Vivemos em um mundo que está a cada dia mais conectado, onde pessoas estão
+constantemente enviando dados pessoais para ambientes que não podem ser
+controlados por elas. Ocasionalmente, esses dados são destinados a tornarem-se
+públicos. Na maioria dos casos, porém, eles devem ser mantidos privados e/ou
+seguros -- tais dados serão doravante denominados \textbf{dados sensíveis}.
+Nesse sentido, desenvolvedores de aplicações devem encontrar formas de proteger
+os dados de seus usuários contra roubo ou modificações indevidas a todo custo.
+
+Além disso, desenvolvedores e empresas frequentemente hospedam suas aplicações
+em ambientes de nuvem pública, com o objetivo de aumentar sua disponibilidade e
+escalabilidade, ou até mesmo para diminuir os custos com infraestrutura física
+\cite{armbrust2010view}. Em tais ambientes, múltiplas aplicações de diferentes
+donos podem residir no mesmo servidor físico, possibilitando que usuários
+maliciosos explorem vulnerabilidades de segurança existentes para obter dados
+sensíveis de outros usuários.
+
+Para  entender os requisitos de aplicações que lidam com dados sensíveis em
+cenários como os supracitados, precisamos primeiramente definir os conceitos de
+segurança e privacidade. Segurança diz respeito a proteções contra acesso,
+modificação e remoção de dados sensíveis por pessoas não autorizadas.
+Privacidade, por sua vez, diz repeito à proteção contra o uso de dados
+sensíveis para propósitos não autorizados.
+
+Considerando esses conceitos, aplicações que lidam com dados sensíveis devem
+considerar os seguintes requisitos:
+
+\begin{itemize}
+    \item Confidencialidade -- impedir o acesso a dados sensíveis por pessoas
+    não autorizadas;
+    \item Disponibilidade -- garantir que dados sensíveis possam ser recuperados
+    por pessoas autorizadas sempre que requisitados;
+    \item Integridade -- impedir a modificação de dados sensíveis por pessoas
+    não autorizadas;
+    \item Privacidade -- impedir o uso de dados sensíveis para propósitos não
+    autorizados.
+\end{itemize}
+
+Há situações em que desenvolvedores também desejam manter o código de suas
+aplicações privado e seguro, seja pelo uso de código proprietário ou por algum
+outro motivo qualquer. Nessas situações, o código de suas aplicações devem ser
+tratados como dados sensíveis.
+
+\subsection{Ambiente de execução confiável}
+\label{subsec:intro_contextualizacao_tee}
+
+O crescente volume de dados sensíveis sendo enviados, armazenados e processados
+em ambientes de computação na nuvem, por um número cada vez maior de
+dispositivos móveis, e as demandas de segurança e privacidade de tais dados
+levaram um fórum de operadores de redes móveis (OMTP, do inglês \textit{Open
+Mobile Terminal Platform}) a definir um padrão para um ambiente de execução
+confiável (TEE, do inglês \textit{Trusted Execution Environment}).
+
+Inicialmente, um TEE foi definido pela OMTP como um conjunto de componentes de
+\textit{hardware} e \textit{software} que facilitam o suporte de aplicações que
+satisfaçam os requisitos de um dos dois níveis de segurança definidos pela
+mesma. O primeiro nível de segurança prevê proteção apenas contra ataques de
+\textit{software}, enquanto o segundo nível de segurança prevê proteção contra
+ataques de \textit{hardware} e de \textit{software}~\cite{omtpadvanced2009}.
+
+Atualmente, o padrão TEE é definido pela \textit{GlobalPlatform}, uma associação
+industrial que visa desenvolver padrões para processamento seguro e confiável
+em serviços digitais e outros dispositivos. A \textit{GlobalPlatform} define TEE
+como uma área segura do processador principal em um \textit{smart phone} ou
+qualquer dispositivo conectado a ele. O TEE garante que dados sensíveis são
+armazenados, processados e protegidos em um ambiente isolado e confiável~\cite
+{globalplatform2017}.
+
+De forma a facilitar o desenvolvimento de serviços que garantam segurança e
+privacidade de dados sensíveis, várias implementações de TEE foram feitas~\cite
+{omtpadvanced2009,logictrusted,trustonic2017,mccune2008flicker,amdSMESEV}, entre
+as quais destacamos o Intel SGX, do inglês \textit{Software Guard eXtensions},
+objeto de estudo deste trabalho de mestrado.
+
+\subsection{Intel SGX}
+\label{subsec:intro_contextualizacao_intel_sgx}
+
+Com o passar do tempo, não só dispositivos móveis necessitavam de um TEE, mas
+sim todo um nicho de dispositivos que lidam com dados sensíveis. Um exemplo
+desses dispositivos são os computadores, sejam eles servidores usados em
+ambientes de computação na nuvem, sejam eles máquinas usadas por clientes.
+Visando este tipo de dispositivos, em 2013 a Intel definiu uma implementação
+própria de TEE conhecida como SGX.
+
+%%%TODO: eu preferiria mencionar por extenso dentro da seção que fala sobre ele.
+
+Intel SGX é um conjunto de instruções incorporado às arquiteturas Intel 64 e
+IA-32 que permite a criação de contêineres baseados em \textit{hardware},
+chamados \textbf{enclaves}. Dados sensíveis que sejam carregados em um enclave são
+protegidos contra modificação ou acesso não autorizado; Código de aplicações que
+executem dentro de enclaves SGX são protegidos contra modificação~\cite
+{mckeen2013innovative}.
+
+Intel SGX está disponível em processadores da 6\textsuperscript{a} geração da
+família Intel Core i, com arquitetura \textit{Skylake}, ou processadores mais
+novos da mesma família, bem como em processadores da família Xeon, a partir da 5\textsuperscript{a} versão. Tais processadores estão disponíveis no mercado desde o segundo semestre do ano de  2015.
+
+Atualmente muitas pesquisas vêm sendo desenvolvidas e publicadas\footnote{\url{https://software.intel.com/en-us/sgx/academic-research}} sobre a
+aplicação de Intel SGX no mundo real~\cite{hoekstra2013using}, bem como
+vulnerabilidades encontradas na tecnologia, e ações necessárias para mitigar estas vulnerabilidades~\cite{swami2017intel}.
+
+Por ser uma tecnologia bastante promissora e já estar presente em um grande
+número de processadores atualmente em uso, iremos utilizá-la como objeto de
+estudo neste trabalho de dissertação.
+
+\section{Problema investigado}
+\label{sec:intro_problema_investigado}
+
+No ano de 2016, estimou-se que o custo anual com crimes cibernéticos em alguns
+países chega a um total de $USD\ 74$ milhões (setenta e quatro milhões de
+dólares americanos)~\cite{costcybercrime2016}. Além disso, com a crescente produção de
+dados sensíveis enviados para ambientes de computação na nuvem, cresce também a
+quantidade de ataques cibernéticos com o intuito de obter e usar tais dados de
+forma não autorizada. Levando em consideração esses fatos, desenvolvedores de
+aplicações que lidam com dados sensíveis devem cada vez mais procurar formas de
+garantir a segurança e a privacidade dos dados de seus clientes.
+
+Uma forma de proteger os dados de usuários é através do uso de um TEE. Uma das
+implementações de um TEE, que está cada vez mais difundida em máquinas de
+usuários e em máquinas servidoras de computação na nuvem, é o Intel SGX. Assim
+como qualquer outra tecnologia, Intel SGX também possui vulnerabilidades, como
+falta de proteção contra ataques de canal lateral, que podem impactar as
+garantias de segurança providas por aplicações que façam uso da tecnologia, bem
+como limitações, como um pequeno espaço de memória disponível, que podem
+impactar o desempenho dessas aplicações devido ao seu mau uso.
+
+Para tirar o melhor proveito de Intel SGX, desenvolvedores devem tomar várias
+decisões na hora de desenvolver suas aplicações, como: $(i)$ qual porção da
+aplicação realmente precisa ser protegido pelas instruções do SGX, $(ii)$ como
+gerenciar a memória consumida por suas aplicações, e $(iii)$ como evitar ataques
+de canal lateral.
+
+\section{Contribuições e relevância}
+\label{sec:intro_contribuicoes}
+
+Este trabalho tem como objetivo abordar os problemas de vulnerabilidades e baixa
+eficiência de aplicações, oriundos de más práticas no uso de Intel SGX,
+investigando arquitetura, implementação e implantação de aplicações que façam
+uso dessa tecnologia. Com esse objetivo, são propostas várias práticas que devem
+ser consideradas durante o processo de desenvolvimento de aplicações que lidam
+com dados sensíveis. Tais práticas levam em consideração as vulnerabilidades e
+limitações do Intel SGX, bem como o ambiente onde essas aplicações serão
+executadas. Considerando essas práticas, desenvolvedores podem tomar decisões
+como: $(i)$ como dividir suas aplicações no modelo de programação do Intel SGX;
+$(ii)$ como particionar os dados a serem processados por suas aplicações;
+$(iii)$ como gerenciar a memória consumida por suas aplicações; $(iv)$ como
+garantir privacidade do código de suas aplicações.
+
+Estas decisões tomadas pelo desenvolvedor trazem benefícios como: $(i)$ maior
+proteção de dados sensíveis de clientes; $(ii)$ diminuição da sobrecarga gerada
+pelo uso de Intel SGX; $(iii)$ diminuição na sobrecarga gerada pelo consumo de
+memória excedente à disponível; $(iv)$ proteção de código proprietário.
+
+Este trabalho também introduz a ferramenta DynSGX~\cite{DynSGXCloudCom2017},
+desenvolvida ao longo da pesquisa do mestrado, que ajuda desenvolvedores a
+proteger o código de suas aplicações usando enclaves SGX, bem como possibilita
+uma melhor gerência de memória de enclaves ocupada por código das aplicações.
+
+O trabalho é relevante por tratar de uma tecnologia que está se tornando padrão
+em processadores tanto de uso pessoal, quanto de servidores, e pela ausência de
+guias de desenvolvimento de aplicações SGX que indiquem as implicações de
+decisões tomadas neste processo.
+
+\section{Metodologia}
+\label{sec:intro_metodologia}
+
+A partir de levantamento bibliográfico do estado da arte, que serviu de base
+para investigações sobre limitações e vulnerabilidades do uso de Intel SGX para
+proteção de dados sigilosos, foi produzida uma lista de aspectos que devem ser
+considerados por programadores ao desenvolver uma aplicação SGX. Baseado nessa
+lista, foram desenvolvidos experimentos para avaliação do impacto em segurança e
+performance causado por cada um desses aspectos. Em seguida, os experimentos
+foram implementados para avaliação, considerando diferentes abordagens para cada
+um dos aspectos listados, que serão detalhadas no Capítulo~\ref
+{chapter:abordagem}. A implementação de todos os componentes, bem como da
+comunicação entre diferentes componentes, foi feita usando as linguagens C e
+C++.
+
+Após a implementação, os experimentos foram executados em uma máquina que possui
+SGX habilitado, utilizando configurações comuns em soluções existentes no
+mercado e na literatura. Nesta máquina, foram comparadas diferentes abordagens
+usadas para os aspectos estudados. Essa comparação foi feita coletando métricas
+como: $(i)$ consumo de memória, $(ii)$ tempo de execução de tarefas, $(iii)$
+tamanho do \textit{Trusted Computing Base} de uma aplicação, com implicações em
+segurança de dados, e $(iv)$ garantias de segurança de código de aplicações.
+
+Por fim, uma nova ferramenta foi proposta, com o objetivo de facilitar o
+desenvolvimento de aplicações que façam uso do SGX, levando em consideração as
+dificuldades e boas práticas discutidas neste trabalho.
+
+\section{Organização da dissertação}
+\label{sec:intro_organizacao}
+
+Este trabalho de dissertação é organizado da seguinte forma:
+\begin{itemize}
+    \item O Capítulo~\ref{chapter:estadoarte} mostra as principais soluções para
+    segurança de dados, sejam elas baseadas em \textit{software} ou em \textit
+    {hardware}, bem como trabalhos relacionados à pesquisa apresentada nesta
+    dissertação;
+    \item No Capítulo~\ref{chapter:sgx} é detalhada a tecnologia Intel SGX,
+    incluindo uma descrição geral da tecnologia, suas vantagens, modelo de
+    programação, modelo de memória, limitações e vulnerabilidades no seu uso;
+    \item Em seguida, no Capítulo~\ref{chapter:abordagem} é detalhada a
+    abordagem aqui proposta, onde descrevemos cada um dos aspectos analisados no
+    desenvolvimento de aplicações seguras, bem como os experimentos executados
+    para avaliação de boas práticas considerando cada um desses aspectos, e os
+    resultados obtidos nesta avaliação;
+    \item No Capítulo~\ref{chapter:dynsgx} introduzimos a ferramenta DynSGX,
+    criada com o objetivo de facilitar o desenvolvimento de aplicações SGX, e adicionar
+    garantias e funcionalidades não providas pela tecnologia Intel SGX isoladamente.
+    \item Por fim, no Capítulo~\ref{chapter:conclusao} é apresentada a conclusão
+    do trabalho, sumariando os resultados e listando limitações e trabalhos
+    futuros.
+\end{itemize}
